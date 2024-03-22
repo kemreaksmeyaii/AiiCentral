@@ -10,6 +10,10 @@ use Illuminate\Support\Facades\Session;
 use App\Models\Info;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\App;
+use App\Models\QuestionType;
+use App\Mail\QuizMail;
+use Illuminate\Support\Facades\Mail;
+use Jenssegers\Agent\Agent;
 
 class QuizController extends Controller
 {
@@ -33,6 +37,27 @@ class QuizController extends Controller
             $totalScore += ($userAnswer == $correctAnswer) ? $score : 0;
         }
 
+        $userId = $request->session()->getId();
+
+        $agent = new Agent();
+        $platform = $agent->platform();
+        $platformVersion = $agent->version($platform);
+        $browser = $agent->browser();
+        $browserVersion = $agent->version($browser);
+        $robot = $agent->robot();
+
+        Mail::to('reaksmey.kem@aii.edu.kh')->send(new QuizMail(
+            $request->all(), 
+            $totalScore, 
+            $userId,
+            $platform,
+            $platformVersion,
+            $browser,
+            $browserVersion,
+            $robot
+        ));
+
+        // dd($request->session()->getId());
 
         return redirect()->route('quiz.result', ['totalScore' => $totalScore]);
 
@@ -74,5 +99,26 @@ class QuizController extends Controller
 
         return view('Cms.quiz.test-result', ['menuData' => $menuData,'slugLanguage' => $slugLanguage, 'countDate' => $countDate]);
 
+    }
+
+    public function quizFormCreate(){
+
+        $url = url()->full();
+        $slug = explode('/', $url);
+        $slugLanguage = $slug[4];
+
+        if (array_key_exists('kh', Config::get('languages'))) {
+            Session::put('applocale', 'kh');
+            App::setLocale(Session()->get('applocale'));
+        }
+
+        $menuData = MenuFrontendHelper::menuFrontend();
+        $countDate = VisitorHelper::visitor();
+
+
+        $questionTypes = QuestionType::all();
+        $quizzes = Quiz::all();
+
+        return view('Cms.quiz.form.create', ['quizzes' => $quizzes ,'questionTypes' => $questionTypes ,'menuData' => $menuData,'slugLanguage' => $slugLanguage, 'countDate' => $countDate]);
     }
 }

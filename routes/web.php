@@ -14,6 +14,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\EveventDetailController;
 use App\Http\Controllers\googleCalendarController;
+use App\Http\Controllers\SubscribeController;
 
 //=======================================================================
 //  Star Fornt-end English Content
@@ -85,6 +86,13 @@ Route::get('/load-more-data', [HomeController::class,'loadMoreData'])->name('loa
 Route::post('quiz/submit/', [QuizController::class,'quizSubmit'])->name('quiz.submit');
 Route::get('/quiz/result/', [QuizController::class,'quizResult'])->name('quiz.result');
 Route::get('kh/quiz/result/', [QuizController::class,'quizResultKh'])->name('quiz.resultkh');
+
+Route::get('admin/quiz/form/create', [QuizController::class,'quizFormCreate'])->name('quizForm.create');
+Route::post('admin/quiz/form/store', [QuizController::class,'quizFormStore'])->name('quizForm.store');
+// end quiz
+
+// subscribe
+Route::post('subscribe/', [SubscribeController::class,'subscribe'])->name('subscribe');
 
 Route::get('events/{slug}', [EveventDetailController::class, 'eventDetail'])->name('events');
 Route::get('kh/events/{slug}', [EveventDetailController::class, 'eventDetailKh'])->name('eventsKh');

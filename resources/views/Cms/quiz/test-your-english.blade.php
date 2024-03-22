@@ -88,6 +88,54 @@
 @include('Cms.top-menu')
 
 <style>
+    .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 1; /* Sit on top */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 15% auto; /* 15% from the top and centered */
+        padding: 20px;
+        border: 1px solid #888;
+        max-width:850px;
+        min-width:400px;
+        /* width: 80%; Could be more or less, depending on screen size */
+    }
+
+    .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+    }
+</style>
+
+<!-- <div id="emailModal" class="modal">
+    <div class="modal-content">
+        <span class="close" id="closeModal">&times;</span>
+        <p>Subscribe to our newsletter:</p>
+        <input type="email" class="form-control mb-3" id="emailInput" placeholder="Enter your email">
+        <button id="subscribeBtn" class="btn btn-primary">Subscribe</button>
+    </div>
+</div> -->
+
+
+<style>
     .testContainer{
         max-width: 900px;
         margin: 0 auto;
@@ -395,6 +443,60 @@ return this;
 
     </script>
 
+
+    <!-- JavaScript to Show Modal Automatically -->
+    <script>
+        // Get the modal
+        var modal = document.getElementById('emailModal');
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementById('closeModal');
+
+        // When the page loads, show the modal
+        window.onload = function() {
+            modal.style.display = 'block';
+        };
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = 'none';
+        };
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+    <script>
+        // JavaScript to handle subscription
+        document.getElementById('subscribeBtn').addEventListener('click', function() {
+            var email = document.getElementById('emailInput').value;
+
+            // Send email to Laravel backend
+            fetch('/subscribe', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}' // Add CSRF token for Laravel
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Handle success (e.g., display thank you message)
+                    console.log('Subscription successful');
+                } else {
+                    // Handle error (e.g., display error message)
+                    console.error('Subscription failed');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    </script>
 
 </body>
 </html>
